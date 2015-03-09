@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+</declaration>
+	<template>
+		<name x="5" y="5">Template</name>
+		<declaration>// Place local declarations here.
+clock t, total;
+int x = 0, y = 0;
+int dx = 0, dy = 1;
+int dir = 0;
+
+bool turn_states[3][3][4];
+
+void initialize() {
+    int i,j,k;
+    for (i = 0; i &lt; 3; i++) {
+        for (j = 0; j &lt; 3; j++) {
+            for (k = 0; k &lt; 4; k++) {
+                turn_states[i][j][k] = true;
+            }
+        }
+    }
+
+    turn_states[0][0][1] = false;
+    turn_states[1][0][1] = false;
+    turn_states[1][0][3] = false;
+    turn_states[2][0][0] = false;
+    turn_states[2][1][0] = false;
+    turn_states[2][2][3] = false;
+    turn_states[1][2][3] = false;
+    turn_states[0][2][2] = false;
+    turn_states[0][1][1] = false;
+    turn_states[1][1][2] = false;
+}
+
+void turn() {
+    dir = (dir+1) % 4;
+
+    if (dir % 2 == 0) {
+        dx = 0;
+        dy = 1;
+    }
+    else {
+        dy = 0;
+        dx = 1;
+    }
+    if (dir &gt;= 2) {
+        dx *= -1;
+        dy *= -1;
+    }
+}
+
+void forward() {
+    y += dy;
+    x += dx;
+}
+
+bool turning_position() {
+    
+    return turn_states[x][y][dir];
+}
+
+bool forward_position() {
+    return !turn_states[x][y][dir];
+}</declaration>
+		<location id="id0" x="51" y="17">
+		</location>
+		<location id="id1" x="204" y="-272">
+		</location>
+		<location id="id2" x="-93" y="-272">
+		</location>
+		<location id="id3" x="51" y="-127">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="59" y="-51">initialize()</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="guard" x="144" y="-161">t &gt;= 1</label>
+			<label kind="assignment" x="127" y="-119">forward()</label>
+			<nail x="204" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="guard" x="17" y="-229">forward_position()</label>
+			<label kind="assignment" x="68" y="-212">t = 0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-85" y="-170">t &gt;= 5</label>
+			<label kind="assignment" x="-85" y="-119">turn()</label>
+			<nail x="-93" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-59" y="-263">turning_position()</label>
+			<label kind="assignment" x="-42" y="-246">t = 0</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Process = Template();
+// List one or more processes to be composed into a system.
+system Process;
+    </system>
+	<queries>
+	</queries>
+</nta>

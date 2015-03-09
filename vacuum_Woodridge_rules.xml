@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+bool visited [3][3];
+
+bool all_visited() {
+    int i, j;
+    for (i = 0; i &lt; 3; i++) {
+        for (j = 0; j &lt; 3; j++) {
+            if (!visited[i][j])
+                return false;
+        }
+    }
+    return true;
+}</declaration>
+	<template>
+		<name x="5" y="5">Template</name>
+		<declaration>// Place local declarations here.
+//clock t, total;
+int x = 0, y = 0;
+int dx = 0, dy = 1;
+int dir = 0;
+bool rules_generated = false;
+
+bool turn_states[3][3][4];
+
+void initialize() {
+
+    turn_states[0][0][0] = false;
+    turn_states[0][1][0] = false;
+    turn_states[0][2][0] = true;
+    turn_states[0][2][1] = false;
+
+    x = 0;
+    y = 0;
+    dir = 0;
+}
+
+void turn() {
+    dir = (dir+1) % 4;
+
+    if (dir % 2 == 0) {
+        dx = 0;
+        dy = 1;
+    }
+    else {
+        dy = 0;
+        dx = 1;
+    }
+    if (dir &gt;= 2) {
+        dx *= -1;
+        dy *= -1;
+    }
+}
+
+void forward() {
+    y = (3+y+dy) % 3;
+    x = (3+x+dx) % 3;
+    visited[x][y] = true;
+}
+
+bool turning_position() {
+    
+    return turn_states[x][y][dir];
+}
+
+bool forward_position() {    
+
+    return !turn_states[x][y][dir];
+}
+
+void add_rule(int n) {
+    turn_states[x][y][dir] = n;
+    dir++;
+    if (dir == 4) {
+        y++;
+        dir = 0;
+    }
+    if (y == 3) {
+        x++;
+        y = 0;
+    }
+    if (x == 3) {
+        rules_generated = true;
+    }
+}
+</declaration>
+		<location id="id0" x="51" y="34">
+		</location>
+		<location id="id1" x="204" y="-272">
+		</location>
+		<location id="id2" x="-93" y="-272">
+		</location>
+		<location id="id3" x="51" y="-127">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="127" y="17">!rules_generated</label>
+			<label kind="assignment" x="127" y="34">add_rule(1)</label>
+			<nail x="119" y="18"/>
+			<nail x="119" y="60"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-153" y="17">!rules_generated</label>
+			<label kind="assignment" x="-102" y="34">add_rule(0)</label>
+			<nail x="-17" y="17"/>
+			<nail x="-17" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="guard" x="59" y="-76">rules_generated</label>
+			<label kind="assignment" x="59" y="-59">initialize()</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="127" y="-119">forward()</label>
+			<nail x="204" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="guard" x="17" y="-229">forward_position()</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="-85" y="-119">turn()</label>
+			<nail x="-93" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-59" y="-263">turning_position()</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Process = Template();
+// List one or more processes to be composed into a system.
+system Process;
+    </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; all_visited()
+			</formula>
+			<comment>
+			</comment>
+		</query>
+	</queries>
+</nta>
