@@ -2,7 +2,18 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-</declaration>
+bool visited[3][3];
+
+bool all_visited() {
+    int i,j;
+    for (i = 0; i &lt; 3; i++) {
+        for (j = 0; j &lt; 3; j++) {
+            if (!visited[i][j])
+                return false;
+        }
+    }
+    return true;
+}</declaration>
 	<template>
 		<name x="5" y="5">Template</name>
 		<declaration>// Place local declarations here.
@@ -13,7 +24,7 @@ int dir = 0;
 
 bool turn_states[3][3][4];
 
-void initialize() {
+void initialize1() {
     int i,j,k;
     for (i = 0; i &lt; 3; i++) {
         for (j = 0; j &lt; 3; j++) {
@@ -33,6 +44,35 @@ void initialize() {
     turn_states[0][2][2] = false;
     turn_states[0][1][1] = false;
     turn_states[1][1][2] = false;
+}
+
+
+void initialize2() {
+    int i,j,k;
+    for (i = 0; i &lt; 3; i++) {
+        for (j = 0; j &lt; 3; j++) {
+            for (k = 0; k &lt; 4; k++) {
+                turn_states[i][j][k] = false;
+            }
+        }
+    }
+
+    turn_states[0][0][3] = true;
+    turn_states[0][1][0] = true;
+    turn_states[2][1][1] = true;
+    turn_states[2][0][2] = true;
+    turn_states[2][0][3] = true;
+    turn_states[2][2][0] = true;
+    turn_states[2][2][1] = true;
+    turn_states[2][2][2] = true;
+    turn_states[0][2][3] = true;
+    turn_states[0][2][0] = true;
+    turn_states[1][2][1] = true;
+    turn_states[1][0][2] = true;
+}
+
+bool is_valid(int a) {
+    return a &gt;= 0 &amp;&amp; a &lt;= 2;
 }
 
 void turn() {
@@ -55,6 +95,9 @@ void turn() {
 void forward() {
     y += dy;
     x += dx;
+    if (is_valid(x) &amp;&amp; is_valid(y))
+        visited[x][y] = true;
+
 }
 
 bool turning_position() {
@@ -77,7 +120,7 @@ bool forward_position() {
 		<transition>
 			<source ref="id0"/>
 			<target ref="id3"/>
-			<label kind="assignment" x="59" y="-51">initialize()</label>
+			<label kind="assignment" x="59" y="-51">initialize1()</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -112,5 +155,11 @@ Process = Template();
 system Process;
     </system>
 	<queries>
+		<query>
+			<formula>E&lt;&gt; all_visited()
+			</formula>
+			<comment>
+			</comment>
+		</query>
 	</queries>
 </nta>

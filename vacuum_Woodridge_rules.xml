@@ -56,8 +56,16 @@ void turn() {
 }
 
 void forward() {
-    y = (3+y+dy) % 3;
-    x = (3+x+dx) % 3;
+    y = (y+dy);
+    x = (x+dx);
+    if (x &gt; 2)
+        x = 2;
+    if (y &gt; 2)
+        y = 2;
+    if (x &lt; 0)
+        x = 0;
+    if (y &lt; 0)
+        y = 0;
     visited[x][y] = true;
 }
 
