@@ -58,6 +58,9 @@ void set_rules1() {
     rules[1][0][W] = MOVE;  
 }
 
+/*
+ * Sets the Wooldridge rules for states (0,0), (0,1) and (0,2).
+ */
 void set_rules_Wooldridge() {
     rules[0][0][N] = MOVE;
     rules[0][1][N] = MOVE;
@@ -65,6 +68,9 @@ void set_rules_Wooldridge() {
     rules[0][2][E] = MOVE;
 }
 
+/*
+ * Sets the Wooldridge rules for states (0,0) and (0,1).
+ */
 void set_rules_Wooldridge2() {
     rules[0][0][N] = MOVE;
     rules[0][1][N] = MOVE;
@@ -172,7 +178,7 @@ void move() {
 		<transition>
 			<source ref="id3"/>
 			<target ref="id4"/>
-			<label kind="assignment" x="-229" y="-144">turn(), t=0</label>
+			<label kind="assignment" x="-229" y="-153">turn(), t=0</label>
 			<nail x="-263" y="-127"/>
 		</transition>
 		<transition>

@@ -191,7 +191,31 @@
 
 % To have just one problem per page, simply put a \clearpage after each problem
 
+\section{The Problem}
+    A simple vacuum cleaner robot moves around a $3\times3$ room. The robot can only turn right or move forward and can only decide which action to take based on it's current location and direction. The robot starts in position $(0,0)$ facing north and must be able to move around the room such that it visits every cell infinitely often if allowed to run indefinitely. The robot follows a set of rules (called configurations in this report) where each individual rule states if the robot is in a specific cell, facing a specific directino, then it should move forward or turn. In this report, we use the modeling tool, Uppaal, to find the configurations that accomplish this.
+
 \section{The Model}
+    We want to create a model that can examine all possible configurations, subject to some constraints, and give a configuration that solves the problem, or verify that none exists. There are 9 cells in the room and for each cell we have 4 states which gives a total of 36 diferent states, each of which can have one of two rules. This gives a total of $2^{36}$ distinct configurations that can be defined for the vacuum robot and so it is not feasible to check each configuration individually. In order to decrease the search space of the model, we delay the definition of individual rules for as long as possible and only define them right before they are used. Now we will not define rules for states that are unreachable and when we reject a configuration, we also reject all configuration that contain the rules of the rejected one as a subset. This drastically reduces the search space and the model can answer quaries instantly.
+
+    Figure \ref{fig:model} shows the uppaal automaton that defines the behaviour of the model. It begins by initializing the internal variables and setting any constraints that we define (hard coded rules) and then moves into the main location. If a rule is defined for the current state, it follows this rule, otherwise it non-deterministically chooses a rule for the current state. Before the model moves forward or turns, it must wait for 1 or 5 time units, respectivly, but this models the time it takes to perform these actions.
+
+    \begin{figure}[h!]
+        \caption{The Uppaal Model}
+        \centering
+        \includegraphics[width=0.5\textwidth]{model.png}
+        \label{fig:model}
+    \end{figure}
+
+    The current state is stored in three internal variables, \texttt{x,y} and \texttt{dir} for the direction. We also store a single rule for each state where a rule can be either \texttt{TURN}, \texttt{MOVE} or \texttt{UNDEF}. The model contains a number of internal functions that it uses.
+    
+    The \texttt{initialize} function sets the current state to the starting state (position $(0,0)$ and facing north) and sets every rule to \texttt{UNDEF}. If we want to add constrantes to the rules (e.g. fix the  Wooldridge rules) we define them in the initialize function by hardcoding rules for specific states. The function also marks every cell as not being visited so that we can verify that a configuartion sends the vacuum robot to every cell in the room.
+
+    \texttt{can\_move} and \texttt{can\_turn} return true if the correct rule is set and the new state will be not be inconsistent.
+
+    \texttt{turn} simply updates the direction of the vacuum but \texttt{move} moves forward in the direction the vacuum is facing and markes the new cell as visited. Since the vacuum begins in cell $(0,0)$, it will not be marked as visited unless the vacuum cleaner leaves this cell and later reenters it. Therefore a solution is only valid if the model can reach a state where every cell is marked as visited and the vacuum is in it's initial state.
+
+    \texttt{rule\_defined} returns true if there is a rule defined for the current state and \texttt{define\_turn} and \texttt{define\_move} simply set the rule for the current state to \texttt{TURN} and \texttt{MOVE} respectivly.
+
 
 
 
