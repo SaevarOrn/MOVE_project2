@@ -28,6 +28,7 @@
 \usepackage{graphicx} % Required to insert images
 \usepackage{listings} % Required for insertion of code
 \usepackage{courier} % Required for the courier font
+\usepackage{gensymb} % degree symbol
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -219,6 +220,87 @@
 
 
 \section{Verification}
+
+\subsection{Wooldridge's Rules}
+
+The first question proposed is whether or not Wooldridge's claim is true, i.e. that the robot should start in $(0,0)$, move upwards to $(0,2)$ and then turn 90\degree{} (to the right).
+\\
+To verify whether or not this is possible, we simply configure the \textit{Uppaal} model to make the \textit{initialize()} function call \textit{set\_rules\_Wooldridge()} to initialize the rules according to Wooldridge's specification.
+We then run the verifier on the following property:
+\[ E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited()) \]
+
+The verifier responds with the message \textbf{``The property is not satisfied''}.
+This tells us that there is no configuration that ensures that the robot will \textit{(i) visit all states} and \textit{(ii) return to the starting position}. 
+These two conditions are necessary to ensure that the robot visits all squares infinitely often.
+Recall that the model ensures that the robots action only depends upon its current square and orientation, since it starts by constructing a configuration and then runs the model with it.
+Since Wooldridge's claim is not true, we can obviously not find the other rules, which brings us to the next question.
+
+\subsection{A subset of Wooldridge's Rules}
+
+The second question was whether or not there was a strategy that follows Wooldridge's rules for positions $(0,0)$ and $(0,1)$.
+Obviously this question was some sort of ruse intended to entertain us.
+The rules for positions $(0,0)$ and $(0,1)$ ensure that the robot ends up in $(0,3)$.
+Once in $(0,3)$, the robot can either: (1) turn right and go forward, an equivalency to Wooldridge's rules
+or (2) turn right twice and go back to square $(0,1)$ or $(0,0)$.
+The problem is that if the robot goes backwards, it will never be able to escape out of the $x=0$ column.
+This is because in $(0,1)$ and $(0,0)$, we have already defined the robot to go forward if it is facing North, and orienting it from South to East inevitably brings the robot to an orientation of North in an intermediary step.
+This tells us that Wooldridge's rules are not helpful for finding a working strategy, even if we only commit to using the first half of them.
+
+Of course, the assignment was to \textbf{verify} whether there is a strategy meeting the criteria.
+Being reasonable scientists, we do this by configuring the \textit{initialize()} function to call \textit{set\_rules\_Wooldridge\textbf{2}()} and run the verifier on the same property as in the previous question:
+\[ E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited()) \]
+
+As expected, the verifier responds with the message \textbf{``The property is not satisfied''}.
+This confirms our previous assessment.
+
+\subsection{The FASTEST Strategy}
+
+Although there are many systematic ways to find the fastest strategy, such as iteratively generating configurations until no faster strategy can be found.
+We did not need to do this, as we carefully considered the various properties of the model and how the rules affect it.
+For example, the above section reveals a curious property \-- the robot must not form a straight line along the edge of the grid with it's right side towards the middle.
+Other similar properties can be derived; taking the observed properties into account allowed us to devise a rudimentary strategy that worked and simplify it by examining how those properties applied to the strategy. 
+(These properties are hard to explain in words, but one can imagine that the route taken through the cells as a piece of string which can be pulled and twisted, see figure \ref{fig:strategy}).
+
+We were able to confirm that our strategy was indeed the fastest possible strategy. This was done by allowing the model to select any feasible configuration and searching for a configuration with a shorter time.
+
+Figure \ref{fig:strategy} shows the fastest strategy. The strategy can of course be rotated any which way, resulting in the same amount of time necessary for a full circuit around the grid.
+Our implementation is actually rotated at the point marked on the figure as `rotate: (0,0)', making $(2,0)$ in the figure the origin $(0,0)$ in our model.
+Since we can only allow forward move and right turns, it is easy to see that this model is legal
+\-- the circuit can be followed without any conflicts.
+
+The fastest strategy takes $72$ units of time \-- twelve forward moves are necessary along with twelve 90\degree{} turns:
+\[ 12 \times ( 1 + 5 ) = 72 \]
+
+\begin{figure}[h!]
+	\caption{The fastest strategy}
+	\centering
+	\includegraphics[width=0.8\textwidth]{strategy.png}
+	\label{fig:strategy}
+\end{figure}
+
+To verify that our strategy was indeed the fastest, we configure the \textit{initialize()} function to call \textit{set\_rules1()}, which configures the model with our strategy.
+First, we run the verifier on the following property:
+
+\begin{equation}
+	\label{eq:eq}
+	E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited() ~ \&\& ~ total ==  72)
+\end{equation}
+
+\textbf{Property \ref{eq:eq} is satisfied} in our configuration.
+This tells us that our winning strategy takes 72 units of time (as expected).
+To explore whether or not there exists a better strategy, we remove the function call to \textit{set\_rules1()} and allow the model to build any configuration.
+Since we have to explore every possible configuration, it does not matter whether the model attempts a depth-first or breadth-first search, and attempting to verify property \ref{eq:leq} will indicate that:
+
+\textbf{Property \ref{eq:leq} is not satisfied} in any configuration.
+
+
+\begin{equation}
+	\label{eq:leq}
+	E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited() ~ \&\& ~ total <=  72)
+\end{equation}
+
+Since property \ref{eq:leq} cannot be satisfied in any legal configuration, we can ascertain that no configuration takes less time than $72$ units.
+This means that our strategy is indeed the fastest, at $72$ units of time per circuit.
 
 %----------------------------------------------------------------------------------------
 
