@@ -214,7 +214,7 @@
 
     \texttt{turn} simply updates the direction of the vacuum but \texttt{move} moves the vacuum forward in the direction it is facing and markes the new cell as visited. Since the vacuum begins in cell $(0,0)$, it will not be marked as visited unless the vacuum cleaner leaves this cell and later reenters it. Therefore a solution is only valid if the model can reach a state where every cell is marked as visited and the vacuum is in it's initial state.
 
-    \texttt{rule\_defined} returns true if there is a rule defined for the current state and \texttt{define\_turn} and \texttt{define\_move} simply set the rule for the current state to \texttt{TURN} and \texttt{MOVE} respectivly.
+    \texttt{rule\_defined} returns true if there is a rule defined for the current state and \texttt{define\_turn} and \texttt{define\_move} simply set the rule for the current state to \texttt{TURN} and \texttt{MOVE} respectively.
 
 
 
