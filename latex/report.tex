@@ -225,14 +225,14 @@
 
 The first question proposed is whether or not Wooldridge's claim is true, i.e. that the robot should start in $(0,0)$, move upwards to $(0,2)$ and then turn 90\degree{} (to the right).
 \\
-To verify whether or not this is possible, we simply configure the \textit{Uppaal} model to make the \textit{initialize()} function call \textit{set\_rules\_Wooldridge()} to initialize the rules according to Wooldridge's specification.
+To verify whether or not this is possible, we simply configure the \textit{Uppaal} model to make the \texttt{initialize()} function call \texttt{set\_rules\_Wooldridge()} to initialize the rules according to Wooldridge's specification.
 We then run the verifier on the following property:
 \[ E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited()) \]
 
 The verifier responds with the message \textbf{``The property is not satisfied''}.
 This tells us that there is no configuration that ensures that the robot will \textit{(i) visit all states} and \textit{(ii) return to the starting position}. 
 These two conditions are necessary to ensure that the robot visits all squares infinitely often.
-Recall that the model ensures that the robots action only depends upon its current square and orientation, since it starts by constructing a configuration and then runs the model with it.
+Recall that the model ensures that the robots action only depends upon its current square and orientation.
 Since Wooldridge's claim is not true, we can obviously not find the other rules, which brings us to the next question.
 
 \subsection{A subset of Wooldridge's Rules}
@@ -247,7 +247,7 @@ This is because in $(0,1)$ and $(0,0)$, we have already defined the robot to go 
 This tells us that Wooldridge's rules are not helpful for finding a working strategy, even if we only commit to using the first half of them.
 
 Of course, the assignment was to \textbf{verify} whether there is a strategy meeting the criteria.
-Being reasonable scientists, we do this by configuring the \textit{initialize()} function to call \textit{set\_rules\_Wooldridge\textbf{2}()} and run the verifier on the same property as in the previous question:
+Being reasonable scientists, we do this by configuring the \texttt{initialize()} function to call \texttt{set\_rules\_Wooldridge\textbf{2}()} and run the verifier on the same property as in the previous question:
 \[ E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited()) \]
 
 As expected, the verifier responds with the message \textbf{``The property is not satisfied''}.
@@ -278,7 +278,7 @@ The fastest strategy takes $72$ units of time \-- twelve forward moves are neces
 	\label{fig:strategy}
 \end{figure}
 
-To verify that our strategy was indeed the fastest, we configure the \textit{initialize()} function to call \textit{set\_rules1()}, which configures the model with our strategy.
+To verify that our strategy was indeed the fastest, we configure the \texttt{initialize()} function to call \texttt{set\_rules1()}, which configures the model with our strategy.
 First, we run the verifier on the following property:
 
 \begin{equation}
@@ -288,7 +288,7 @@ First, we run the verifier on the following property:
 
 \textbf{Property \ref{eq:eq} is satisfied} in our configuration.
 This tells us that our winning strategy takes 72 units of time (as expected).
-To explore whether or not there exists a better strategy, we remove the function call to \textit{set\_rules1()} and allow the model to build any configuration.
+To explore whether or not there exists a better strategy, we remove the function call to \texttt{set\_rules1()} and allow the model to build any configuration.
 Since we have to explore every possible configuration, it does not matter whether the model attempts a depth-first or breadth-first search, and attempting to verify property \ref{eq:leq} will indicate that:
 
 \textbf{Property \ref{eq:leq} is not satisfied} in any configuration.
