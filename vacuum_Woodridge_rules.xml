@@ -19,7 +19,7 @@ bool all_visited() {
 		<name x="5" y="5">Template</name>
 		<declaration>// Place local declarations here.
 //clock t, total;
-int x = 0, y = 0;
+int x = 1, y = 0;
 int dx = 0, dy = 1;
 int dir = 0;
 bool rules_generated = false;
@@ -27,6 +27,13 @@ bool rules_generated = false;
 bool turn_states[3][3][4];
 
 void initialize() {
+
+    int i, j;
+    for (i = 0; i &lt; 3; i++) {
+        for (j = 0; j &lt; 4; j++) {
+            turn_states[0][i][j] = false;
+        }
+    }
 
     turn_states[0][0][0] = false;
     turn_states[0][1][0] = false;
