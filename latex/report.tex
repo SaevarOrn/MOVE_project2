@@ -230,7 +230,7 @@ We then run the verifier on the following property:
 \[ E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited()) \]
 
 The verifier responds with the message \textbf{``The property is not satisfied''}.
-This tells us that there is no configuration that ensures that the robot will (i) visit all states and (ii) return to the starting position. 
+This tells us that there is no configuration that ensures that the robot will \textit{(i) visit all states} and \textit{(ii) return to the starting position}. 
 These two conditions are necessary to ensure that the robot visits all squares infinitely often.
 Recall that the model ensures that the robots action only depends upon its current square and orientation, since it starts by constructing a configuration and then runs the model with it.
 Since Wooldridge's claim is not true, we can obviously not find the other rules, which brings us to the next question.
@@ -243,7 +243,7 @@ The rules for positions $(0,0)$ and $(0,1)$ ensure that the robot ends up in $(0
 Once in $(0,3)$, the robot can either: (1) turn right and go forward, an equivalency to Wooldridge's rules
 or (2) turn right twice and go back to square $(0,1)$ or $(0,0)$.
 The problem is that if the robot goes backwards, it will never be able to escape out of the $x=0$ column.
-This is because in $(0,1)$ and $(0,0)$, we have already defined the robot to go forward if it is facing North, and orienting it from South to East inevitably brings the robot to an orientation of North.
+This is because in $(0,1)$ and $(0,0)$, we have already defined the robot to go forward if it is facing North, and orienting it from South to East inevitably brings the robot to an orientation of North in an intermediary step.
 This tells us that Wooldridge's rules are not helpful for finding a working strategy, even if we only commit to using the first half of them.
 
 Of course, the assignment was to \textbf{verify} whether there is a strategy meeting the criteria.
@@ -255,15 +255,16 @@ This confirms our previous assessment.
 
 \subsection{The FASTEST Strategy}
 
-Although there are many systematic ways to find the fastest strategy, such as generating configurations with a fixed upper bound for the time elapsed and iterating until no lower times can be found.
+Although there are many systematic ways to find the fastest strategy, such as iteratively generating configurations until no faster strategy can be found.
 We did not need to do this, as we carefully considered the various properties of the model and how the rules affect it.
 For example, the above section reveals a curious property \-- the robot must not form a straight line along the edge of the grid with it's right side towards the middle.
 Other similar properties can be derived; taking the observed properties into account allowed us to devise a rudimentary strategy that worked and simplify it by examining how those properties applied to the strategy. 
+(These properties are hard to explain in words, but one can imagine that the route taken through the cells as a piece of string which can be pulled and twisted, see figure \ref{fig:strategy}).
 
 We were able to confirm that our strategy was indeed the fastest possible strategy. This was done by allowing the model to select any feasible configuration and searching for a configuration with a shorter time.
 
-Figure \ref{fig:strategy} shows the fastest strategy. The strategy can of course be rotated any which way, resulting in the same amount of time necessary for a full loop around the grid.
-Our implementation is actually rotated at the point marked on the figure as `rotate: (0,0)', making that point the origin $(0,0)$ in our model.
+Figure \ref{fig:strategy} shows the fastest strategy. The strategy can of course be rotated any which way, resulting in the same amount of time necessary for a full circuit around the grid.
+Our implementation is actually rotated at the point marked on the figure as `rotate: (0,0)', making $(2,0)$ in the figure the origin $(0,0)$ in our model.
 Since we can only allow forward move and right turns, it is easy to see that this model is legal
 \-- the circuit can be followed without any conflicts.
 
@@ -298,6 +299,8 @@ Since we have to explore every possible configuration, it does not matter whethe
 	E<>(V.in\_initial\_pos() ~ \&\& ~ all\_visited() ~ \&\& ~ total <=  72)
 \end{equation}
 
+Since property \ref{eq:leq} cannot be satisfied in any legal configuration, we can ascertain that no configuration takes less time than $72$ units.
+This means that our strategy is indeed the fastest, at $72$ units of time per circuit.
 
 %----------------------------------------------------------------------------------------
 
