@@ -25,12 +25,14 @@ int[0,3] dir;
 const int UNDEF = 0, TURN = 1, MOVE = 2;
 const int N = 0, E = 1, S = 2, W = 3;
 
+// Stores the rule for each state
 int[0,2] rules[3][3][4];
 
 bool in_initial_pos() {
     return x == 0 &amp;&amp; y == 0 &amp;&amp; dir == 0;
 }
 
+// A set of rules that solves the problem in 72 time units
 void set_rules1() {
     rules[0][0][W] = TURN;
     rules[0][0][N] = MOVE;
@@ -92,9 +94,9 @@ void initialize() {
         }
     }
 
-    //set_rules1();
+    set_rules1();
     //set_rules_Wooldridge();
-    set_rules_Wooldridge2();
+    //set_rules_Wooldridge2();
 }
 
 bool can_move() {
@@ -213,7 +215,7 @@ system V;
 			</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt;(V.in_initial_pos() &amp;&amp; all_visited() &amp;&amp; total == 72)
+			<formula>E&lt;&gt;(V.in_initial_pos() &amp;&amp; all_visited() &amp;&amp; total &lt; 72)
 			</formula>
 			<comment>
 			</comment>
