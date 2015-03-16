@@ -208,7 +208,7 @@
 
     The current state is stored in three internal variables, \texttt{x,y} and \texttt{dir} for the direction. We also store a single rule for each state where a rule can be either \texttt{TURN}, \texttt{MOVE} or \texttt{UNDEF}. The model also contains a number of internal functions that it uses during it's execution.
     
-    The \texttt{initialize} function sets the current state to the starting state (position $(0,0)$ and facing north) and sets every rule to \texttt{UNDEF}. If we want to add constrantes to the rules (e.g. fix the  Wooldridge rules) we define them in the initialize function by hardcoding rules for specific states. The function also marks every cell as not being visited so that we can verify that a configuartion sends the vacuum robot to every cell in the room.
+    The \texttt{initialize} function sets the current state to the starting state (position $(0,0)$ and facing north) and sets every rule to \texttt{UNDEF}. If we want to add constraints to the rules (e.g. fix the  Wooldridge rules) we define them in the initialize function by hardcoding rules for specific states. The function also marks every cell as not being visited so that we can verify that a configuration sends the vacuum robot to every cell in the room.
 
     \texttt{can\_move} and \texttt{can\_turn} return true if the corresponding rule is defined for the current state  and the new state will be not be inconsistent.
 
