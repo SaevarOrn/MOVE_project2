@@ -17,11 +17,11 @@ bool all_visited() {
     return true;
 }
 
-bool origin_not_incomplete() {
+bool origin_incomplete() {
     if (visited[0][0]) {
-        return all_visited();
+        return !all_visited();
     }
-    return true;
+    return false;
 }</declaration>
 	<template>
 		<name x="5" y="5">Vacuum</name>
@@ -223,6 +223,12 @@ system V;
 		</query>
 		<query>
 			<formula>E&lt;&gt;(V.in_initial_pos() &amp;&amp; all_visited() &amp;&amp; total &lt; 72)
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt;(!origin_incomplete())
 			</formula>
 			<comment>
 			</comment>
