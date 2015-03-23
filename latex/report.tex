@@ -233,6 +233,12 @@ The verifier responds with the message \textbf{``The property is not satisfied''
 This tells us that there is no configuration that ensures that the robot will \textit{(i) visit all states} and \textit{(ii) return to the starting position}. 
 These two conditions are necessary to ensure that the robot visits all squares infinitely often.
 Recall that the model ensures that the robots action only depends upon its current square and orientation.
+(\textit{Since the robot must make a decision based only on location and orientation, it is sufficient to show that the robot completes a single complete cycle.
+A deterministic strategy must therefore be used to ensure that all states are visited infinitely often.
+It is possible to ensure that if the robot has a winning strategy, it will finish in the starting position.
+This is done by checking whether the robot can ever be in a state where it has visited $(0,0)$ but not visited every state:
+$A<>(!origin\_incomplete())$ where $origin\_incomplete()$ returns true IFF $visited[0][0]$ \&\& $!all\_visited()$
+})
 Since Wooldridge's claim is not true, we can obviously not find the other rules, which brings us to the next question.
 
 \subsection{A subset of Wooldridge's Rules}

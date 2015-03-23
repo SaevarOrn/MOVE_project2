@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock total;
+
+bool visited[3][3];
+
+bool all_visited() {
+    int i, j;
+    for (i = 0; i &lt; 3; i++) {
+        for (j = 0; j &lt; 3; j++) {
+            if (!visited[i][j])
+                return false;
+        }
+    }
+    return true;
+}
+
+bool origin_not_incomplete() {
+    if (visited[0][0]) {
+        return all_visited();
+    }
+    return true;
+}</declaration>
+	<template>
+		<name x="5" y="5">Vacuum</name>
+		<declaration>// Place local declarations here.
+clock t;
+int[0,2] x, y;
+int[0,3] dir;
+const int UNDEF = 0, TURN = 1, MOVE = 2;
+const int N = 0, E = 1, S = 2, W = 3;
+
+// Stores the rule for each state
+int[0,2] rules[3][3][4];
+
+bool in_initial_pos() {
+    return x == 0 &amp;&amp; y == 0 &amp;&amp; dir == 0;
+}
+
+// A set of rules that solves the problem in 72 time units
+void set_rules1() {
+    rules[0][0][W] = TURN;
+    rules[0][0][N] = MOVE;
+    rules[0][1][N] = TURN;
+    rules[0][1][E] = MOVE;
+    rules[1][1][E] = MOVE;
+    rules[2][1][E] = TURN;
+    rules[2][1][S] = MOVE;
+    rules[2][0][S] = TURN;
+    rules[2][0][W] = TURN;
+    rules[2][0][N] = MOVE;
+    rules[2][1][N] = MOVE;
+    rules[2][2][N] = TURN;
+    rules[2][2][E] = TURN;
+    rules[2][2][S] = TURN;
+    rules[2][2][W] = MOVE;
+    rules[1][2][W] = MOVE;
+    rules[0][2][W] = TURN;
+    rules[0][2][N] = TURN;
+    rules[0][2][E] = MOVE;
+    rules[1][2][E] = TURN;
+    rules[1][2][S] = MOVE;
+    rules[1][1][S] = MOVE;
+    rules[1][0][S] = TURN;
+    rules[1][0][W] = MOVE;  
+}
+
+/*
+ * Sets the Wooldridge rules for states (0,0), (0,1) and (0,2).
+ */
+void set_rules_Wooldridge() {
+    rules[0][0][N] = MOVE;
+    rules[0][1][N] = MOVE;
+    rules[0][2][N] = TURN;
+    rules[0][2][E] = MOVE;
+}
+
+/*
+ * Sets the Wooldridge rules for states (0,0) and (0,1).
+ */
+void set_rules_Wooldridge2() {
+    rules[0][0][N] = MOVE;
+    rules[0][1][N] = MOVE;
+}
+
+void initialize() {
+    int i, j, k;
+
+    x = 0;
+    y = 0;
+    dir = 0;
+
+    for (i = 0; i &lt; 3; i++) {
+        for (j = 0; j &lt; 3; j++) {
+            visited[i][j] = false;
+            for (k = 0; k &lt; 4; k++) {
+                rules[i][j][k] = UNDEF;
+            }
+        }
+    }
+
+    set_rules1();
+    //set_rules_Wooldridge();
+    //set_rules_Wooldridge2();
+}
+
+bool can_move() {
+    if (dir == 0 &amp;&amp; y == 2)
+        return false;
+    if (dir == 1 &amp;&amp; x == 2)
+        return false;
+    if (dir == 2 &amp;&amp; y == 0)
+        return false;
+    if (dir == 3 &amp;&amp; x == 0)
+        return false;
+
+    return rules[x][y][dir] == MOVE;
+}
+
+bool can_turn() {
+    return rules[x][y][dir] == TURN;
+}
+
+bool rule_defined() {
+    return rules[x][y][dir] != UNDEF;
+}
+
+void define_turn() {
+    rules[x][y][dir] = TURN;
+}
+
+void define_move() {
+    rules[x][y][dir] = MOVE;
+}
+
+void turn() {
+    dir = (dir + 1) % 4;
+}
+
+void move() {
+    if (dir == 0)
+        y++;
+    if (dir == 1)
+        x++;
+    if (dir == 2)
+        y--;
+    if (dir == 3)
+        x--;
+
+    visited[x][y] = true;
+}</declaration>
+		<location id="id0" x="-110" y="-255">
+		</location>
+		<location id="id1" x="-110" y="85">
+		</location>
+		<location id="id2" x="42" y="-17">
+		</location>
+		<location id="id3" x="-263" y="-17">
+		</location>
+		<location id="id4" x="-110" y="-127">
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-85" y="-280">define_move()</label>
+			<nail x="0" y="-255"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-212" y="-280">define_turn()</label>
+			<nail x="-212" y="-255"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-161" y="-229">!rule_defined()</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-102" y="34">initialize()</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-229" y="-153">turn(), t=0</label>
+			<nail x="-263" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-212" y="-51">can_turn()
+&amp;&amp; t&gt;= 5</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-51" y="-153">move(), t=0</label>
+			<nail x="42" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-93" y="-51">can_move()
+&amp;&amp; t &gt;= 1</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+V = Vacuum();
+// List one or more processes to be composed into a system.
+system V;
+    </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt;(V.in_initial_pos() &amp;&amp; all_visited())
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt;(V.in_initial_pos() &amp;&amp; all_visited() &amp;&amp; total &lt; 72)
+			</formula>
+			<comment>
+			</comment>
+		</query>
+	</queries>
+</nta>
